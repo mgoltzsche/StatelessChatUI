@@ -1295,6 +1295,12 @@
 
   /* ---------- Welcome ---------- */
   addMessage('system', 'Ready. CORS mode enabled. <think>, reasoning and reasoning_content supported. Import/Export + Markdown + JSON editor + auto-scroll enabled. Load models via /v1/models.');
+
+  /* ---------- Derive API base URL from server & Load models ---------- */
+  if (window.location.href.match(/^https?:\/\//)) {
+    els.apiBase.value = window.location.href.replace(/^(.+?)(\/[^\/]*)?$/, '$1')+'/v1';
+    loadModels();
+  }
 })();
 </script>
 </body>

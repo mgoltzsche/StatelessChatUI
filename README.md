@@ -66,7 +66,7 @@ python -m http.server 8000
 npx http-server -p 8000
 ```
 
-To optionally serve the file via an nginx HTTP server running within a Linux container with reverse-proxied API endpoints, avoiding CORS problems and allowing to overwrite the base URL of the chat completion and models endpoints separately:
+To optionally serve the file via an nginx HTTP server running within a Linux container with reverse-proxied API endpoints, avoiding CORS problems, allowing to overwrite the base URL of the chat completion and models endpoints separately and avoiding the need to configure the API base URL manually within the UI:
 ```bash
 docker build -t statelesschatui:dev .
 docker run --rm -e OPENAI_BASE_URL=http://localai:8080/v1 -p 8000:8000 statelesschatui:dev
