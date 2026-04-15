@@ -66,13 +66,37 @@ python -m http.server 8000
 npx http-server -p 8000
 ```
 
-To optionally serve the file via an nginx HTTP server running within a Linux container with reverse-proxied API endpoints, avoiding CORS problems, allowing to overwrite the base URL of the chat completion and models endpoints separately and avoiding the need to configure the API base URL manually within the UI:
+To optionally build and run the docker container to serve the file via an nginx HTTP server, run:
 ```bash
 docker build -t statelesschatui:dev .
-docker run --rm -e OPENAI_BASE_URL=http://localai:8080/v1 -p 8000:8000 statelesschatui:dev
+docker run --rm -p 8000:8000 \
+	-e OPENAI_BASE_URL=http://localai:8080/v1 \
+	-v "`pwd`/chat.html:/usr/share/nginx/html/index.html" \
+	statelesschatui:dev
 ```
-(In case the models are served by a different service, the `OPENAI_MODELS_BASE_URL` env var can be specified additionally.)
-Now you can browse the web UI at [http://localhost:8000](http://localhost:8000).
+Once the container started, you can browse the web UI at [http://localhost:8000](http://localhost:8000).
+Instead of building the container image yourself you can also use a published release.
+For more information as well as the configuration options, see the section "[Run the container](#run-the-container)".
+
+### Run the container
+
+To serve StatelessChatUI via a Linux container, run:
+```sh
+docker run --rm -e OPENAI_BASE_URL=http://localai:8080/v1 -p 8000:8000 ghcr.io/srware-net/statelesschatui:latest
+```
+Once the container started, you can browse the web UI at [http://localhost:8000](http://localhost:8000).
+To have a reproducible setup, you should replace `latest` with a concrete version ideally.
+
+The container can be configured using the following environment variables:
+| Environment variable     | Default value               | Description                            |
+| ------------------------ | --------------------------- | -------------------------------------- |
+| `OPENAI_BASE_URL`        | `http://127.0.0.1:8080/v1`  | The base URL pointing to the OpenAI API server. |
+| `OPENAI_MODELS_BASE_URL` | (same as `OPENAI_BASE_URL`) | The base URL pointing to the server serving the OpenAI models API endpoint. |
+
+Using the Linux container provides the following benefits compared to using the HTML file directly:
+* No CORS problems due to reverse-proxied API endpoints.
+* API base URL can be configured as environment variable, avoiding the need for manual configuration within the web UI.
+* A separate base URL can be configured to fetch the available models, allowing to use a middleware/agent that only serves the chat completion endpoint.
 
 ### API Configuration
 
