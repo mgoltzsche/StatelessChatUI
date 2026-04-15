@@ -35,8 +35,14 @@ jobs:
       name: Prepare release
       uses: mgoltzsche/conventional-release@v0
       with:
+        commit-files: chat.html
         # Don't validate git commit messages prior to requiring the convention
         ignore-commits-before: 5b106ddeae56211c542ef1d71415dcf4acded4f2
+
+    - name: Write release version into chat.html
+      if: steps.release.outputs.publish
+      run: |
+        sed -Ei 's/^(\s+const APP_VERSION = ).+$/\1'"'$RELEASE_VERSION';/" chat.html
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v4
@@ -50,9 +56,10 @@ jobs:
       if: steps.release.outputs.publish
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-    - name: Build and push container image
+    - name: Build (and push) container image
       uses: docker/build-push-action@v7
       with:
+        context: .
         push: ${{ !!steps.release.outputs.publish }}
         platforms: ${{ env.PLATFORMS }}
         tags: |
