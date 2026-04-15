@@ -16,6 +16,9 @@ permissions: # Grant write access to github.token within non-pull_request builds
   contents: write
   packages: write
 
+env:
+  PLATFORMS: linux/amd64,linux/arm64
+
 jobs:
   build:
     name: Build
@@ -37,6 +40,8 @@ jobs:
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v4
+      with:
+        platforms: ${{ env.PLATFORMS }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v4
@@ -49,6 +54,8 @@ jobs:
       uses: docker/build-push-action@v7
       with:
         push: ${{ !!steps.release.outputs.publish }}
+        platforms: ${{ env.PLATFORMS }}
         tags: |
           ghcr.io/${{ github.actor }}/statelesschatui:latest
           ghcr.io/${{ github.actor }}/statelesschatui:${{ steps.release.outputs.version }}
+
