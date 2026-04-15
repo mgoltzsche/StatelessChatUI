@@ -33,7 +33,7 @@ jobs:
 
     - id: release
       name: Prepare release
-      uses: mgoltzsche/conventional-release@v0
+      uses: mgoltzsche/conventional-release@v1
       with:
         commit-files: chat.html
         # Don't validate git commit messages prior to requiring the convention
